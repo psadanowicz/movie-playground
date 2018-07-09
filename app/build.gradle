@@ -1,0 +1,99 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+ext.supportLibraryVersion = '27.1.1'
+ext.dagger2 = '2.16'
+ext.retrofit = '2.4.0'
+ext.room = '1.1.1'
+ext.lifecycle = '1.1.1'
+ext.glide = "4.7.1"
+
+android {
+    compileSdkVersion 27
+    dataBinding {
+        enabled = true
+    }
+    defaultConfig {
+        applicationId "pawelsadanowicz.movieplayground"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary true
+        flavorDimensions "dev", "production"
+    }
+
+    buildTypes {
+        debug {
+            debuggable = true
+        }
+        release {
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        dev {
+            applicationId "pawelsadanowicz.movieplayground.dev"
+            dimension "dev"
+            buildConfigField "String", "API_URL", "\"https://api.themoviedb.org/3\""
+            buildConfigField "String", "API_KEY", "\"" + getPropertyFromFile("apiKey") + "\"" //todo prepare dev key
+        }
+        production {
+            applicationId "pawelsadanowicz.movieplayground"
+            dimension "production"
+            buildConfigField "String", "API_URL", "\"https://api.themoviedb.org/3\""
+            buildConfigField "String", "API_KEY", "\"" + getPropertyFromFile("apiKey") + "\""
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "com.google.dagger:dagger:$dagger2"
+    implementation "com.google.dagger:dagger-android:$dagger2"
+    implementation "com.google.dagger:dagger-android-support:$dagger2"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$dagger2"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger2"
+    kapt "com.google.dagger:dagger-android-processor:$dagger2"
+    kapt "com.google.dagger:dagger-compiler:$dagger2"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.retrofit2:converter-jackson:$retrofit"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit"
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    implementation "android.arch.lifecycle:runtime:$lifecycle"
+    implementation "android.arch.lifecycle:extensions:$lifecycle"
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycle"
+    kapt "android.arch.lifecycle:compiler:$lifecycle"
+
+    implementation "android.arch.persistence.room:runtime:$room"
+    annotationProcessor "android.arch.persistence.room:compiler:$room"
+    kapt "android.arch.persistence.room:compiler:$room"
+    androidTestImplementation "android.arch.persistence.room:testing:$room"
+
+    implementation "com.github.bumptech.glide:glide:$glide"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide"
+    kapt "com.github.bumptech.glide:compiler:$glide"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+def getPropertyFromFile(def key) {
+    Properties localProps = new Properties()
+    localProps.load(new FileInputStream(file('../local.properties')))
+    def result = localProps.getProperty(key)
+    return result
+}
