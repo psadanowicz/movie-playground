@@ -1,0 +1,3 @@
+package pawelsadanowicz.movieplayground.domain.movies.usecase
+
+class GetPopularMoviesUseCase
