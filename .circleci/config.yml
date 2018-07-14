@@ -17,6 +17,9 @@ jobs:
       - restore_cache:
           <<: *cache_key
       - run:
+          name: Create local.properties with API key
+          command: echo apiKey=$MOVIE_PLAYGROUND_API_KEY >> local.properties
+      - run:
           name: Download Dependencies
           command: ./gradlew dependencies
       - save_cache:
