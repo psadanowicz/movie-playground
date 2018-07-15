@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'jacoco-android'
 
 ext.supportLibraryVersion = '27.1.1'
 ext.dagger2 = '2.16'
@@ -23,12 +24,13 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
-        flavorDimensions "dev", "production"
+        flavorDimensions "environment"
     }
 
     buildTypes {
         debug {
             debuggable = true
+            testCoverageEnabled true
         }
         release {
             debuggable false
@@ -40,13 +42,13 @@ android {
     productFlavors {
         dev {
             applicationId "pawelsadanowicz.movieplayground.dev"
-            dimension "dev"
+            dimension "environment"
             buildConfigField "String", "API_URL", "\"https://api.themoviedb.org/3\""
             buildConfigField "String", "API_KEY", "\"" + getPropertyFromFile("apiKey") + "\"" //todo prepare dev key
         }
         production {
             applicationId "pawelsadanowicz.movieplayground"
-            dimension "production"
+            dimension "environment"
             buildConfigField "String", "API_URL", "\"https://api.themoviedb.org/3\""
             buildConfigField "String", "API_KEY", "\"" + getPropertyFromFile("apiKey") + "\""
         }
