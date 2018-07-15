@@ -34,7 +34,7 @@ jobs:
             curl https://codecov.io/bash -o codecov.sh
             chmod +x codecov.sh
             ./codecov.sh -X gcov -X coveragepy -X xcode \
-                -f app/build/reports/jacoco/jacocoTestDevDebugUnitTestReport/jacocoTestDevDebugUnitTestReport.xml
+                -s app/build/reports/jacoco
       - store_artifacts:
           path: app/build/reports
           destination: reports
