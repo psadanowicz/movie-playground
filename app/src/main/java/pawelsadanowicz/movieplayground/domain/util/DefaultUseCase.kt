@@ -1,9 +1,8 @@
 package pawelsadanowicz.movieplayground.domain.util
 
 import io.reactivex.Observable
-import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.observers.DisposableObserver
 import pawelsadanowicz.movieplayground.util.rx.AppSchedulers
 
 abstract class DefaultUseCase<P, R>(private val appSchedulers: AppSchedulers) {
@@ -12,11 +11,16 @@ abstract class DefaultUseCase<P, R>(private val appSchedulers: AppSchedulers) {
 
     protected abstract fun run(params: P): Observable<R>
 
-    fun execute(params: P, observer: Observer<R>) {
-        disposable.add(run(params)
-                .subscribeOn(appSchedulers.io())
-                .observeOn(appSchedulers.ui())
-                .subscribeWith(observer) as Disposable)
+    fun execute(params: P, observer: DisposableObserver<R>) {
+        disposable.add(build(params).subscribeWith(observer))
+    }
+
+    fun execute(params: P, onNext: (R) -> Unit, onError: (Throwable) -> Unit) {
+        disposable.add(build(params).subscribe(onNext, onError))
+    }
+
+    fun execute(params: P, onNext: (R) -> Unit, onError: (Throwable) -> Unit, onComplete: () -> Unit) {
+        disposable.add(build(params).subscribe(onNext, onError, onComplete))
     }
 
     fun unsubscribe() {
@@ -25,5 +29,10 @@ abstract class DefaultUseCase<P, R>(private val appSchedulers: AppSchedulers) {
         }
     }
 
-    fun isDisposed(): Boolean = disposable.isDisposed()
+    fun isDisposed(): Boolean = disposable.isDisposed
+
+    private fun build(params: P): Observable<R> = run(params)
+            .subscribeOn(appSchedulers.io())
+            .observeOn(appSchedulers.ui())
+
 }
